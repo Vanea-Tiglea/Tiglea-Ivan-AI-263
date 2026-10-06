@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <math.h>
+#include <windows.h>
+
+int main(void)
+{
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+
+    double a, b, c, xn, xk, dx, x, F;
+
+    printf("Enter a, b, c: ");
+    scanf("%lf %lf %lf", &a, &b, &c);
+    printf("Enter xn, xk, dx: ");
+    scanf("%lf %lf %lf", &xn, &xk, &dx);
+
+    if (c == 0 || dx <= 0 || xn > xk) {
+        printf("Error: c != 0, dx > 0, xn <= xk\n");
+        return 1;
+    }
+
+    printf("-----------------------------\n");
+    printf("|     x     |       F       |\n");
+    printf("-----------------------------\n");
+
+    for (x = xn; x <= xk + 1e-9; x += dx) {
+        if (a + x < 0 && b != 0) {
+            if (x <= 0) {
+                printf("| %9.3f | %13s |\n", x, "undefined");
+                continue;
+            }
+            F = a * log(x) - cos(x) / c;
+        }
+        else if (a + x > 0 && b == 0) {
+            if (x - b == 0) {
+                printf("| %9.3f | %13s |\n", x, "undefined");
+                continue;
+            }
+            F = sin((x - a) / (x - b));
+        }
+        else {
+            F = exp(x) + (a + x * x) / c;
+        }
+        printf("| %9.3f | %13.3f |\n", x, F);
+    }
+    printf("-----------------------------\n");
+    return 0;
+}
