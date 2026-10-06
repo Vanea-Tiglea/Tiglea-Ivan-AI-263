@@ -1,0 +1,71 @@
+#include <stdio.h>
+#include <math.h>
+#include <windows.h>
+
+/*
+       | a*x^3 - b*cos(x)       при x < 0 и a != 0
+   Y = | sqrt(x) + b/(x - c)    при x > 0
+       | a + b + c              в остальных случаях
+*/
+
+/* Считает Y в точке t. Возвращает 1, если значение есть, 0 - если не определено */
+int calc(double t, double a, double b, double c, double *y)
+{
+    if (t < 0 && a != 0) {
+        *y = a * t * t * t - b * cos(t);
+        return 1;
+    }
+    if (t > 0) {
+        if (t == c)
+            return 0;
+        *y = sqrt(t) + b / (t - c);
+        return 1;
+    }
+    *y = a + b + c;
+    return 1;
+}
+
+int main(void)
+{
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+
+    double a, b, c, start, end, step, t, y, maxY = 0;
+    int n = 0, ok = 0, bad = 0;
+
+    printf("Enter a, b, c: ");
+    scanf("%lf %lf %lf", &a, &b, &c);
+    printf("Enter start, end, step: ");
+    scanf("%lf %lf %lf", &start, &end, &step);
+
+    if (step <= 0 || start > end) {
+        printf("Error: step > 0, start <= end\n");
+        return 1;
+    }
+
+    printf("-----------------------------------\n");
+    printf("|  N  |     t     |       Y       |\n");
+    printf("-----------------------------------\n");
+
+    t = start;
+    while (t <= end + 1e-9) {
+        n++;
+        if (calc(t, a, b, c, &y)) {
+            printf("| %3d | %9.3f | %13.3f |\n", n, t, y);
+            if (ok == 0 || y > maxY)
+                maxY = y;
+            ok++;
+        }
+        else {
+            printf("| %3d | %9.3f | %13s |\n", n, t, "undefined");
+            bad++;
+        }
+        t += step;
+    }
+
+    printf("-----------------------------------\n");
+    printf("Points: %d, defined: %d, undefined: %d\n", n, ok, bad);
+    if (ok > 0)
+        printf("Max Y = %.3f\n", maxY);
+    return 0;
+}
